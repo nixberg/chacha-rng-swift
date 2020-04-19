@@ -3,17 +3,17 @@
 import PackageDescription
 
 let package = Package(
-    name: "ChaChaRNG",
+    name: "ChaCha",
     products: [
         .library(
-            name: "ChaChaRNG",
-            targets: ["ChaChaRNG"]),
+            name: "ChaCha",
+            targets: ["ChaCha"]),
     ],
     targets: [
         .target(
-            name: "ChaChaRNG"),
+            name: "ChaCha"),
         .testTarget(
-            name: "ChaChaRNGTests",
-            dependencies: ["ChaChaRNG"]),
+            name: "ChaChaTests",
+            dependencies: ["ChaCha"]),
     ]
 )
