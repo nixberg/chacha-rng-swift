@@ -12,8 +12,8 @@ extension ChaCha {
         
         if tailCount > 0 {
             var word: UInt32 = self.next()
-            for i in (1...tailCount).reversed() {
-                slice[slice.endIndex - i] = UInt8(truncatingIfNeeded: word)
+            for i in slice.indices.suffix(tailCount) {
+                slice[i] = UInt8(truncatingIfNeeded: word)
                 word &>>= 8
             }
         }
@@ -30,7 +30,7 @@ extension ChaCha {
         
         if tailCount > 0 {
             let word: UInt32 = self.next()
-            slice[slice.endIndex - 1] = UInt16(truncatingIfNeeded: word)
+            slice[slice.index(before: slice.endIndex)] = UInt16(truncatingIfNeeded: word)
         }
     }
     
