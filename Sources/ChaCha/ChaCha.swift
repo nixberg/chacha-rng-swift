@@ -8,15 +8,10 @@ public struct ChaCha: RandomNumberGenerator {
     public let rounds: Rounds
     
     private var state: State
-    private var workingState = State()
+    private var workingState: State = .zero
     private var index = 0
     
-    public init() {
-        rounds = .eight
-        state = State(.random(in: 0...UInt32.max), 0)
-    }
-    
-    public init(rounds: Rounds) {
+    public init(rounds: Rounds = .eight) {
         self.rounds = rounds
         state = State(.random(in: 0...UInt32.max), 0)
     }
@@ -26,20 +21,32 @@ public struct ChaCha: RandomNumberGenerator {
         state = State(seed, streamID)
     }
     
-    public mutating func next() -> UInt32 {
+    mutating func next() -> UInt32 {
         if index.isMultiple(of: 16) {
-            self.block()
+            workingState = state
+            
+            for _ in stride(from: 0, to: rounds.rawValue, by: 2) {
+                workingState.doubleRound()
+            }
+            
+            workingState &+= state
+            
+            state.incrementCounter()
         }
         
         defer {
             index += 1
         }
         
-        return withUnsafePointer(to: workingState) {
-            $0.withMemoryRebound(to: UInt32.self, capacity: 16) {
-                UInt32(littleEndian: $0[index % 16])
-            }
-        }
+        return UInt32(littleEndian: workingState[index % 16])
+    }
+    
+    public mutating func next() -> UInt8 {
+        UInt8(truncatingIfNeeded: self.next() as UInt32)
+    }
+    
+    public mutating func next() -> UInt16 {
+        UInt16(truncatingIfNeeded: self.next() as UInt32)
     }
     
     public mutating func next() -> UInt64 {
@@ -47,42 +54,44 @@ public struct ChaCha: RandomNumberGenerator {
         let high = UInt64(truncatingIfNeeded: self.next() as UInt32)
         return (high &<< 32) | low
     }
-    
-    private mutating func block() {
-        workingState = state
-        
-        for _ in stride(from: 0, to: rounds.rawValue, by: 2) {
-            workingState.doubleRound()
-        }
-        
-        workingState &+= state
-        
-        state.incrementCounter()
-    }
 }
 
-fileprivate struct State {
-    private var a: SIMD4<UInt32>
-    private var b: SIMD4<UInt32>
-    private var c: SIMD4<UInt32>
-    private var d: SIMD4<UInt32>
+fileprivate typealias State = SIMD16<UInt32>
+
+fileprivate extension State {
+    @inline(__always)
+    private var a: SIMD4<UInt32> {
+        get { lowHalf.lowHalf }
+        set { lowHalf.lowHalf = newValue }
+    }
     
-    init() {
-        a = .zero
-        b = .zero
-        c = .zero
-        d = .zero
+    @inline(__always)
+    private var b: SIMD4<UInt32> {
+        get { lowHalf.highHalf }
+        set { lowHalf.highHalf = newValue }
+    }
+    
+    @inline(__always)
+    private var c: SIMD4<UInt32> {
+        get { highHalf.lowHalf }
+        set { highHalf.lowHalf = newValue }
+    }
+    
+    @inline(__always)
+    private var d: SIMD4<UInt32> {
+        get { highHalf.highHalf }
+        set { highHalf.highHalf = newValue }
     }
     
     init(_ seed: SIMD8<UInt32>, _ streamID: UInt64) {
-        a = SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574)
-        b = seed.lowHalf
-        c = seed.highHalf
-        d = SIMD4(
-            0,
-            0,
-            UInt32(truncatingIfNeeded: streamID),
-            UInt32(truncatingIfNeeded: streamID &>> 32)
+        self = SIMD16(
+            lowHalf: SIMD8(
+                lowHalf: SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574),
+                highHalf: seed.lowHalf),
+            highHalf: SIMD8(
+                lowHalf: seed.highHalf,
+                highHalf: SIMD4(0, 0, UInt32(truncatingIfNeeded: streamID), UInt32(truncatingIfNeeded: streamID &>> 32))
+            )
         )
         
         a = a.littleEndian
@@ -93,10 +102,10 @@ fileprivate struct State {
     
     @inline(__always)
     mutating func incrementCounter() {
-        d.x = (UInt32(littleEndian: d.x) &+ 1).littleEndian
-        if d.x == 0 {
-            d.y = (UInt32(littleEndian: d.y) &+ 1).littleEndian
-            assert(d.y != 0)
+        self[12] = (UInt32(littleEndian: self[12]) &+ 1).littleEndian
+        if self[12] == 0 {
+            self[13] = (UInt32(littleEndian: self[13]) &+ 1).littleEndian
+            assert(self[13] != 0)
         }
     }
     
@@ -139,14 +148,6 @@ fileprivate struct State {
         b = b[SIMD4(3, 0, 1, 2)]
         c = c[SIMD4(2, 3, 0, 1)]
         d = d[SIMD4(1, 2, 3, 0)]
-    }
-    
-    @inline(__always)
-    static func &+= (lhs: inout Self, rhs: Self) {
-        lhs.a &+= rhs.a
-        lhs.b &+= rhs.b
-        lhs.c &+= rhs.c
-        lhs.d &+= rhs.d
     }
 }
 
