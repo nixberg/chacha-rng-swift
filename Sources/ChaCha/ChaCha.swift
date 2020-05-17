@@ -84,13 +84,15 @@ fileprivate extension State {
     }
     
     init(_ seed: SIMD8<UInt32>, _ streamID: UInt64) {
+        let stream = streamID.littleEndian
+        
         self = SIMD16(
             lowHalf: SIMD8(
                 lowHalf: SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574),
                 highHalf: seed.lowHalf),
             highHalf: SIMD8(
                 lowHalf: seed.highHalf,
-                highHalf: SIMD4(0, 0, UInt32(truncatingIfNeeded: streamID), UInt32(truncatingIfNeeded: streamID &>> 32))
+                highHalf: SIMD4(0, 0, UInt32(truncatingIfNeeded: stream), UInt32(truncatingIfNeeded: stream &>> 32))
             )
         )
         
