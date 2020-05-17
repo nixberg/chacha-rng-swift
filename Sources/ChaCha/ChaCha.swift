@@ -16,9 +16,9 @@ public struct ChaCha: RandomNumberGenerator {
         state = State(.random(in: 0...UInt32.max), 0)
     }
     
-    public init(rounds: Rounds = .eight, seed: SIMD8<UInt32>, streamID: UInt64 = 0) {
+    public init(rounds: Rounds = .eight, seed: SIMD8<UInt32>, stream: UInt64 = 0) {
         self.rounds = rounds
-        state = State(seed, streamID)
+        state = State(seed, stream)
     }
     
     mutating func next() -> UInt32 {
@@ -83,8 +83,8 @@ fileprivate extension State {
         set { highHalf.highHalf = newValue }
     }
     
-    init(_ seed: SIMD8<UInt32>, _ streamID: UInt64) {
-        let stream = streamID.littleEndian
+    init(_ seed: SIMD8<UInt32>, _ stream: UInt64) {
+        let stream = stream.littleEndian
         
         self = SIMD16(
             lowHalf: SIMD8(

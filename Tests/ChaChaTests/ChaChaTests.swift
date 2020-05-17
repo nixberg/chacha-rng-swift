@@ -203,7 +203,7 @@ final class ChaChaTests: XCTestCase {
     }
     
     func testStream() {
-        var rng = ChaCha(rounds: .twenty, seed: .zero, streamID: 0xb61e6e6a48c285)
+        var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0xb61e6e6a48c285)
         
         let expected: [UInt32] = [
             0x3fa865f8, 0xcc53c4a6, 0xe1a9bb4a, 0x321a1962, 0xfa0d984f, 0x1073a4d4, 0xbcc96d46,
