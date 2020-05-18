@@ -1,4 +1,4 @@
-![Swift](https://github.com/nixberg/chacha-rng-swift/workflows/Swift/badge.svg?branch=master)
+![Swift](https://github.com/nixberg/chacha-rng-swift/workflows/Swift/badge.svg)
 
 # ChaCha
 
