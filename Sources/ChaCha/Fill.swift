@@ -1,4 +1,4 @@
-extension ChaCha {
+public extension ChaCha {
     mutating func fill(_ slice: inout ArraySlice<UInt8>) {
         let tailCount = slice.count % 4
         
