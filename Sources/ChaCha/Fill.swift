@@ -45,4 +45,16 @@ public extension ChaCha {
             slice[i] = self.next()
         }
     }
+    
+    mutating func fill(_ slice: inout ArraySlice<Float32>) {
+        for i in slice.indices {
+            slice[i] = self.next()
+        }
+    }
+    
+    mutating func fill(_ slice: inout ArraySlice<Float64>) {
+        for i in slice.indices {
+            slice[i] = self.next()
+        }
+    }
 }

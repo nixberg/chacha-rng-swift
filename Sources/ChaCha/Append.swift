@@ -75,4 +75,30 @@ public extension ChaCha {
         self.append(to: &output, count: count)
         return output
     }
+    
+    mutating func append<Output>(to output: inout Output, count: Int) where Output: RangeReplaceableCollection, Output.Element == Float32 {
+        for _ in 0..<count {
+            output.append(self.next())
+        }
+    }
+    
+    mutating func generateArray(count: Int) -> [Float32] {
+        var output: [Float32] = []
+        output.reserveCapacity(count)
+        self.append(to: &output, count: count)
+        return output
+    }
+    
+    mutating func append<Output>(to output: inout Output, count: Int) where Output: RangeReplaceableCollection, Output.Element == Float64 {
+        for _ in 0..<count {
+            output.append(self.next())
+        }
+    }
+    
+    mutating func generateArray(count: Int) -> [Float64] {
+        var output: [Float64] = []
+        output.reserveCapacity(count)
+        self.append(to: &output, count: count)
+        return output
+    }
 }
