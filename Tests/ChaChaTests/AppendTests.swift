@@ -22,7 +22,7 @@ final class AppendTests: XCTestCase {
         XCTAssertEqual(b, expectedB)
     }
     
-    func testFillUInt8Logic() {
+    func testAppendUInt8Logic() {
         let expected: [UInt8] = [
             0x76, 0xb8, 0xe0, 0xad, 0xa0, 0xf1, 0x3d, 0x90, 0x40, 0x5d, 0x6a, 0xe5, 0x53, 0x86,
             0xbd, 0x28, 0xbd, 0xd2, 0x19, 0xb8, 0xa0, 0x8d, 0xed, 0x1a, 0xa8, 0x36, 0xef, 0xcc,
@@ -40,7 +40,7 @@ final class AppendTests: XCTestCase {
         }
     }
     
-    func testFillUInt16() {
+    func testAppendUInt16() {
         var rng = ChaCha(rounds: .twenty, seed: .zero)
         
         let expectedA: [UInt16] = [
@@ -58,7 +58,7 @@ final class AppendTests: XCTestCase {
         XCTAssertEqual(b, expectedB)
     }
     
-    func testFillUInt16Logic() {
+    func testAppendUInt16Logic() {
         let expected: [UInt16] = [
             0xb876, 0xade0, 0xf1a0, 0x903d, 0x5d40, 0xe56a, 0x8653, 0x28bd, 0xd2bd, 0xb819, 0x8da0,
             0x1aed, 0x36a8, 0xccef, 0x778b, 0xc70d, 0x41da, 0x7c59, 0x5751, 0x8d48, 0x2477, 0x3fe0,
@@ -74,7 +74,7 @@ final class AppendTests: XCTestCase {
         }
     }
     
-    func testFillUInt32() {
+    func testAppendUInt32() {
         var rng = ChaCha(rounds: .twenty, seed: .zero)
         
         let expectedA: [UInt32] = [
@@ -92,7 +92,7 @@ final class AppendTests: XCTestCase {
         XCTAssertEqual(b, expectedB)
     }
     
-    func testFillUInt64() {
+    func testAppendUInt64() {
         var rng = ChaCha(rounds: .twenty, seed: .zero)
         
         let expectedA: [UInt64] = [
@@ -105,6 +105,42 @@ final class AppendTests: XCTestCase {
         
         let a: [UInt64] = rng.generateArray(count: 9)
         let b: [UInt64] = rng.generateArray(count: 2)
+        
+        XCTAssertEqual(a, expectedA)
+        XCTAssertEqual(b, expectedB)
+    }
+    
+    func testAppendFloat32() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expectedA: [Float32] = [
+            0.679210186, 0.563445151, 0.896154225, 0.159141898, 0.719143987, 0.105187237,
+            0.800525069, 0.777549207, 0.485736907, 0.551885068, 0.249513865, 0.215985775,
+            0.955936611, 0.111833096, 0.412941396, 0.524992824, 0.745712698
+        ]
+        
+        let expectedB: [Float32] = [0.477421820, 0.486690164, 0.050906003]
+        
+        let a: [Float32] = rng.generateArray(count: 17)
+        let b: [Float32] = rng.generateArray(count: 3)
+        
+        XCTAssertEqual(a, expectedA)
+        XCTAssertEqual(b, expectedB)
+    }
+    
+    func testAppendFloat64() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expectedA: [Float64] = [
+            0.56344518826324730, 0.15914191768880792, 0.10518727468306754, 0.77754923976038692,
+            0.55188508738897202, 0.21598581789282933, 0.11183310066255192, 0.52499286514076893,
+            0.47742184012795619
+        ]
+        
+        let expectedB: [Float64] = [0.05090602941035527, 0.41171093485914778]
+        
+        let a: [Float64] = rng.generateArray(count: 9)
+        let b: [Float64] = rng.generateArray(count: 2)
         
         XCTAssertEqual(a, expectedA)
         XCTAssertEqual(b, expectedB)

@@ -80,6 +80,34 @@ final class ChaChaTests: XCTestCase {
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
     
+    func testNextFloat32() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expected: [Float32] = [
+            0.679210186, 0.563445151, 0.896154225, 0.159141898, 0.719143987, 0.105187237,
+            0.800525069, 0.777549207, 0.485736907, 0.551885068, 0.249513865, 0.215985775,
+            0.955936611, 0.111833096, 0.412941396, 0.524992824, 0.745712698, 0.477421820,
+            0.486690164, 0.050906003, 0.625626504, 0.411710918, 0.243465781, 0.927657008,
+            0.461451948, 0.262922645, 0.688284934, 0.832913876, 0.156737149, 0.273361802,
+            0.121259749, 0.434775889
+        ];
+        
+        XCTAssertEqual(expected.map { _ in rng.next() }, expected)
+    }
+    
+    func testNextFloat64() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expected: [Float64] = [
+            0.56344518826324730, 0.15914191768880792, 0.10518727468306754, 0.77754923976038692,
+            0.55188508738897202, 0.21598581789282933, 0.11183310066255192, 0.52499286514076893,
+            0.47742184012795619, 0.05090602941035527, 0.41171093485914778, 0.92765701986929994,
+            0.26292268104419381, 0.83291390274844246, 0.27336182099691053, 0.43477590641036157
+        ];
+        
+        XCTAssertEqual(expected.map { _ in rng.next() }, expected)
+    }
+    
     func testStream() {
         var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0xb61e6e6a48c285)
         
@@ -90,7 +118,7 @@ final class ChaChaTests: XCTestCase {
             0x93c1299e, 0x6ae1f5c3, 0x7915dfad, 0xbe635958, 0x878e07d8, 0x1b9437ff, 0x1611b826,
             0xc0f16fe1, 0x831520c6, 0xa7570c72, 0x700b6066
         ]
-                
+        
         var array = [UInt32](repeating: 0, count: 32)
         rng.fill(&array[...])
         

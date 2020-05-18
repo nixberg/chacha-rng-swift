@@ -123,4 +123,46 @@ final class FillTests: XCTestCase {
         XCTAssertEqual(a, expectedA)
         XCTAssertEqual(b, expectedB)
     }
+    
+    func testFillFloat32() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expectedA: [Float32] = [
+            0.679210186, 0.563445151, 0.896154225, 0.159141898, 0.719143987, 0.105187237,
+            0.800525069, 0.777549207, 0.485736907, 0.551885068, 0.249513865, 0.215985775,
+            0.955936611, 0.111833096, 0.412941396, 0.524992824, 0.745712698
+        ]
+        
+        let expectedB: [Float32] = [0.477421820, 0.486690164, 0.050906003]
+        
+        var a = [Float32](repeating: 0, count: 17)
+        var b = [Float32](repeating: 0, count: 3)
+        
+        rng.fill(&a[...])
+        rng.fill(&b[...])
+        
+        XCTAssertEqual(a, expectedA)
+        XCTAssertEqual(b, expectedB)
+    }
+    
+    func testFillFloat64() {
+        var rng = ChaCha(rounds: .twenty, seed: .zero)
+        
+        let expectedA: [Float64] = [
+            0.56344518826324730, 0.15914191768880792, 0.10518727468306754, 0.77754923976038692,
+            0.55188508738897202, 0.21598581789282933, 0.11183310066255192, 0.52499286514076893,
+            0.47742184012795619
+        ]
+        
+        let expectedB: [Float64] = [0.05090602941035527, 0.41171093485914778]
+        
+        var a = [Float64](repeating: 0, count: 9)
+        var b = [Float64](repeating: 0, count: 2)
+        
+        rng.fill(&a[...])
+        rng.fill(&b[...])
+        
+        XCTAssertEqual(a, expectedA)
+        XCTAssertEqual(b, expectedB)
+    }
 }
