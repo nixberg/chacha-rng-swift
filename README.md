@@ -26,3 +26,17 @@ var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
 var array = [UInt8](repeating: 0, count: 4)
 rng.fill(&array[...]) // [118, 184, 224, 173]
 ```
+
+```Swift
+var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+
+var array: [UInt8] = rng.generateArray(count: 4)
+rng.fill(&array[...]) // [118, 184, 224, 173]
+```
+
+```Swift
+var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+
+var array: [UInt8] = [0]
+rng.append(to: &array, count: 4) // [0, 118, 184, 224, 173]
+```
