@@ -21,7 +21,15 @@ public struct ChaCha: RandomNumberGenerator {
         state = State(seed, stream)
     }
     
-    mutating func next() -> UInt32 {
+    public mutating func next() -> UInt8 {
+        UInt8(truncatingIfNeeded: self.next() as UInt32)
+    }
+    
+    public mutating func next() -> UInt16 {
+        UInt16(truncatingIfNeeded: self.next() as UInt32)
+    }
+    
+    public mutating func next() -> UInt32 {
         if index.isMultiple(of: 16) {
             workingState = state
             
@@ -39,14 +47,6 @@ public struct ChaCha: RandomNumberGenerator {
         }
         
         return UInt32(littleEndian: workingState[index % 16])
-    }
-    
-    public mutating func next() -> UInt8 {
-        UInt8(truncatingIfNeeded: self.next() as UInt32)
-    }
-    
-    public mutating func next() -> UInt16 {
-        UInt16(truncatingIfNeeded: self.next() as UInt32)
     }
     
     public mutating func next() -> UInt64 {
