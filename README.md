@@ -26,7 +26,7 @@ var rng = ChaCha(seed: .zero) // Seeded ChaCha8, stream: 0.
 Int.random(in: 0..<1234, using: &rng) // 1032
 ```
 
-### Fill ArraySlice
+### Fill `ArraySlice`
 
 ```Swift
 var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
@@ -35,7 +35,7 @@ var array = [UInt8](repeating: 0, count: 4)
 rng.fill(&array[...]) // [118, 184, 224, 173]
 ```
 
-### Generate Array
+### Generate `Array`
 
 ```Swift
 var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
@@ -43,9 +43,7 @@ var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
 let array: [UInt8] = rng.generateArray(count: 4) // [118, 184, 224, 173]
 ```
 
-### Append
-
-To a `MutableDataProtocol` or `RangeReplaceableCollection`:
+### Append to `RangeReplaceableCollection`
 
 ```Swift
 var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
