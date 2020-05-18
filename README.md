@@ -60,6 +60,3 @@ var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
 var f32: [Float32] = rng.next() // 0.679210186
 var f64: [Float64] = rng.next() // 0.89615423990493759
 ```
-
-
-
