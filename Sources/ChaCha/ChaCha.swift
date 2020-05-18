@@ -54,6 +54,18 @@ public struct ChaCha: RandomNumberGenerator {
         let high = UInt64(truncatingIfNeeded: self.next() as UInt32)
         return (high &<< 32) | low
     }
+    
+    //public mutating func next() -> Float16 {
+    //    Float16(self.next() as UInt16 &>> 5) * 0x1p-11
+    //}
+    
+    public mutating func next() -> Float32 {
+        Float32(self.next() as UInt32 &>> 8) * 0x1p-24
+    }
+    
+    public mutating func next() -> Float64 {
+        Float64(self.next() as UInt64 &>> 11) * 0x1p-53
+    }
 }
 
 fileprivate typealias State = SIMD16<UInt32>
