@@ -3,7 +3,7 @@ import Foundation
 public extension ChaCha {
     mutating func append<Output>(to output: inout Output, count: Int) where Output: MutableDataProtocol {
         let tailCount = count % 4
-               
+        
         for _ in stride(from: 0, to: count - tailCount, by: 4) {
             let word: UInt32 = self.next()
             output.append(UInt8(truncatingIfNeeded: word))
@@ -30,7 +30,7 @@ public extension ChaCha {
     
     mutating func append<Output>(to output: inout Output, count: Int) where Output: RangeReplaceableCollection, Output.Element == UInt16 {
         let tailCount = count % 2
-               
+        
         for _ in stride(from: 0, to: count - tailCount, by: 2) {
             let word: UInt32 = self.next()
             output.append(UInt16(truncatingIfNeeded: word))

@@ -71,7 +71,7 @@ final class AppendTests: XCTestCase {
             
             var array: [UInt16] = []
             rng.append(to: &array, count: count)
-
+            
             XCTAssertEqual(array[...], expected[..<count])
         }
     }
