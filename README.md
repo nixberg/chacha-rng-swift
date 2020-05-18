@@ -51,3 +51,15 @@ var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
 var array: [UInt8] = [0]
 rng.append(to: &array, count: 4) // [0, 118, 184, 224, 173]
 ```
+
+### Floating-point numbers
+
+```Swift
+var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+
+var f32: [Float32] = rng.next() // 0.679210186
+var f64: [Float64] = rng.next() // 0.89615423990493759
+```
+
+
+
