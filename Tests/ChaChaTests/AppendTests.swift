@@ -34,8 +34,7 @@ final class AppendTests: XCTestCase {
         for count in 0..<expected.count {
             var rng = ChaCha(rounds: .twenty, seed: .zero)
             
-            var array: [UInt8] = []
-            rng.append(to: &array, count: count)
+            let array: [UInt8] = rng.generateArray(count: count)
             
             XCTAssertEqual(array[...], expected[..<count])
         }
@@ -69,8 +68,7 @@ final class AppendTests: XCTestCase {
         for count in 0..<expected.count {
             var rng = ChaCha(rounds: .twenty, seed: .zero)
             
-            var array: [UInt16] = []
-            rng.append(to: &array, count: count)
+            let array: [UInt16] = rng.generateArray(count: count)
             
             XCTAssertEqual(array[...], expected[..<count])
         }
