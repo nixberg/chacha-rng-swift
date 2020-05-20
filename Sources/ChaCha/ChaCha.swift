@@ -9,7 +9,7 @@ public struct ChaCha: RandomNumberGenerator {
     
     private var state: State
     private var workingState: State = .zero
-    private var index = 0
+    private var wordIndex = 16
     
     public init(rounds: Rounds = .eight) {
         self.rounds = rounds
@@ -30,7 +30,9 @@ public struct ChaCha: RandomNumberGenerator {
     }
     
     public mutating func next() -> UInt32 {
-        if index.isMultiple(of: 16) {
+        assert((0...16).contains(wordIndex))
+        
+        if wordIndex == 16 {
             workingState = state
             
             for _ in stride(from: 0, to: rounds.rawValue, by: 2) {
@@ -40,13 +42,14 @@ public struct ChaCha: RandomNumberGenerator {
             workingState &+= state
             
             state.incrementCounter()
+            wordIndex = 0
         }
         
         defer {
-            index += 1
+            wordIndex += 1
         }
         
-        return workingState[index % 16]
+        return workingState[wordIndex]
     }
     
     public mutating func next() -> UInt64 {
