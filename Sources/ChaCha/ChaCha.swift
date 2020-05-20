@@ -46,7 +46,7 @@ public struct ChaCha: RandomNumberGenerator {
             index += 1
         }
         
-        return UInt32(littleEndian: workingState[index % 16])
+        return workingState[index % 16]
     }
     
     public mutating func next() -> UInt64 {
@@ -96,8 +96,6 @@ fileprivate extension State {
     }
     
     init(_ seed: SIMD8<UInt32>, _ stream: UInt64) {
-        let stream = stream.littleEndian
-        
         self = SIMD16(
             lowHalf: SIMD8(
                 lowHalf: SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574),
@@ -107,18 +105,13 @@ fileprivate extension State {
                 highHalf: SIMD4(0, 0, UInt32(truncatingIfNeeded: stream), UInt32(truncatingIfNeeded: stream &>> 32))
             )
         )
-        
-        a = a.littleEndian
-        b = b.littleEndian
-        c = c.littleEndian
-        d = d.littleEndian
     }
     
     @inline(__always)
     mutating func incrementCounter() {
-        self[12] = (UInt32(littleEndian: self[12]) &+ 1).littleEndian
+        self[12] &+= 1
         if self[12] == 0 {
-            self[13] = (UInt32(littleEndian: self[13]) &+ 1).littleEndian
+            self[13] &+= 1
             assert(self[13] != 0)
         }
     }
@@ -166,11 +159,6 @@ fileprivate extension State {
 }
 
 fileprivate extension SIMD4 where Scalar == UInt32 {
-    @inline(__always)
-    var littleEndian: Self {
-        Self(x.littleEndian, y.littleEndian, z.littleEndian, w.littleEndian)
-    }
-    
     @inline(__always)
     mutating func rotate(left count: UInt32) {
         self = (self &<< count) | (self &>> (32 - count))
