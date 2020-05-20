@@ -115,7 +115,7 @@ fileprivate extension State {
         self[12] &+= 1
         if self[12] == 0 {
             self[13] &+= 1
-            assert(self[13] != 0)
+            precondition(self[13] != 0)
         }
     }
     
