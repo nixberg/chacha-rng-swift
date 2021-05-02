@@ -1,5 +1,5 @@
-import XCTest
 import ChaCha
+import XCTest
 
 final class ChaChaTests: XCTestCase {
     func testChaCha8() {
@@ -33,7 +33,7 @@ final class ChaChaTests: XCTestCase {
             0xc0, 0xaa, 0x79, 0x2b, 0xc1, 0x21, 0xee, 0x42, 0xe2, 0xc3, 0x26, 0x12, 0x70, 0x61,
             0xed, 0xa1, 0x55, 0x99, 0xcb, 0x5d, 0xb3, 0xdb, 0x87, 0x0b, 0xea, 0x5a, 0xec, 0xf3,
             0x53, 0x16
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
@@ -48,7 +48,7 @@ final class ChaChaTests: XCTestCase {
             0x2663, 0x7eae, 0x6819, 0x718e, 0xd37b, 0xc3b0, 0xa0a9, 0x2701, 0x7b1f, 0x1e28, 0x58e4,
             0xd273, 0xcfc9, 0xf35f, 0xa240, 0x2013, 0xb3d7, 0x20d5, 0xd23e, 0xb8c5, 0x85fb, 0x63c3,
             0x5cb4, 0xd42d, 0x84f8, 0xb1ed, 0x6210, 0x2c1f, 0xcd6d, 0x6ae8, 0x6731
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
@@ -62,7 +62,7 @@ final class ChaChaTests: XCTestCase {
             0x69b687c3, 0x8665eeb2, 0xbee7079f, 0x7a385155, 0x7c97ba98, 0x0d082d73, 0xa0290fcb,
             0x6965e348, 0x3e53c612, 0xed7aee32, 0x7621b729, 0x434ee69c, 0xb03371d5, 0xd539d874,
             0x281fed31, 0x45fb0a51, 0x1f0ae1ac, 0x6f4d794b
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
@@ -75,7 +75,7 @@ final class ChaChaTests: XCTestCase {
             0x8d4857517c5941da, 0x374ad8b83fe02477, 0x1ca11815f4b8436a, 0x8665eeb269b687c3,
             0x7a385155bee7079f, 0x0d082d737c97ba98, 0x6965e348a0290fcb, 0xed7aee323e53c612,
             0x434ee69c7621b729, 0xd539d874b03371d5, 0x45fb0a51281fed31, 0x6f4d794b1f0ae1ac
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
@@ -90,7 +90,7 @@ final class ChaChaTests: XCTestCase {
             0.486690164, 0.050906003, 0.625626504, 0.411710918, 0.243465781, 0.927657008,
             0.461451948, 0.262922645, 0.688284934, 0.832913876, 0.156737149, 0.273361802,
             0.121259749, 0.434775889
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }
@@ -103,7 +103,7 @@ final class ChaChaTests: XCTestCase {
             0.55188508738897202, 0.21598581789282933, 0.11183310066255192, 0.52499286514076893,
             0.47742184012795619, 0.05090602941035527, 0.41171093485914778, 0.92765701986929994,
             0.26292268104419381, 0.83291390274844246, 0.27336182099691053, 0.43477590641036157
-        ];
+        ]
         
         XCTAssertEqual(expected.map { _ in rng.next() }, expected)
     }

@@ -1,5 +1,5 @@
-import XCTest
 import ChaCha
+import XCTest
 
 final class FillTests: XCTestCase {
     func testFillUInt8() {

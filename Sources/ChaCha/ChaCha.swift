@@ -13,7 +13,7 @@ public struct ChaCha: RandomNumberGenerator {
     
     public init(rounds: Rounds = .eight) {
         self.rounds = rounds
-        state = State(.random(in: 0...UInt32.max), 0)
+        state = State(.random(), 0)
     }
     
     public init(rounds: Rounds = .eight, seed: SIMD8<UInt32>, stream: UInt64 = 0) {
@@ -53,21 +53,23 @@ public struct ChaCha: RandomNumberGenerator {
     }
     
     public mutating func next() -> UInt64 {
-        let low = UInt64(truncatingIfNeeded: self.next() as UInt32)
-        let high = UInt64(truncatingIfNeeded: self.next() as UInt32)
-        return (high &<< 32) | low
+        let lo = UInt64(truncatingIfNeeded: self.next() as UInt32)
+        let hi = UInt64(truncatingIfNeeded: self.next() as UInt32)
+        return (hi << 32) | lo
     }
     
-    //public mutating func next() -> Float16 {
-    //    Float16(self.next() as UInt16 &>> 5) * 0x1p-11
-    //}
+    #if swift(>=5.4) && !((os(macOS) || targetEnvironment(macCatalyst)) && arch(x86_64))
+    public mutating func next() -> Float16 {
+        Float16(self.next() as UInt16 >> 5) * 0x1p-11
+    }
+    #endif
     
     public mutating func next() -> Float32 {
-        Float32(self.next() as UInt32 &>> 8) * 0x1p-24
+        Float32(self.next() as UInt32 >> 8) * 0x1p-24
     }
     
     public mutating func next() -> Float64 {
-        Float64(self.next() as UInt64 &>> 11) * 0x1p-53
+        Float64(self.next() as UInt64 >> 11) * 0x1p-53
     }
 }
 
@@ -101,11 +103,19 @@ fileprivate extension State {
     init(_ seed: SIMD8<UInt32>, _ stream: UInt64) {
         self = SIMD16(
             lowHalf: SIMD8(
-                lowHalf: SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574),
+                lowHalf: SIMD4(
+                    0x61707865,
+                    0x3320646e,
+                    0x79622d32,
+                    0x6b206574),
                 highHalf: seed.lowHalf),
             highHalf: SIMD8(
                 lowHalf: seed.highHalf,
-                highHalf: SIMD4(0, 0, UInt32(truncatingIfNeeded: stream), UInt32(truncatingIfNeeded: stream &>> 32))
+                highHalf: SIMD4(
+                    0,
+                    0,
+                    UInt32(truncatingIfNeeded: stream),
+                    UInt32(truncatingIfNeeded: stream >> 32))
             )
         )
     }
@@ -158,6 +168,18 @@ fileprivate extension State {
         b = b[SIMD4(3, 0, 1, 2)]
         c = c[SIMD4(2, 3, 0, 1)]
         d = d[SIMD4(1, 2, 3, 0)]
+    }
+}
+
+fileprivate extension SIMD8 where Scalar == UInt32 {
+    @inline(__always)
+    static func random() -> Self {
+        var rng = SystemRandomNumberGenerator()
+        var result = Self()
+        for i in result.indices {
+            result[i] = rng.next()
+        }
+        return result
     }
 }
 
