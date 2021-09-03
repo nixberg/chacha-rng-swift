@@ -1,5 +1,5 @@
 public enum Rounds: Int {
-    case eight = 8
+    case eight  =  8
     case twelve = 12
     case twenty = 20
 }
@@ -8,7 +8,7 @@ public struct ChaCha: RandomNumberGenerator {
     public let rounds: Rounds
     
     private var state: State
-    private var workingState: State = .zero
+    private var workingState: State = .init()
     private var wordIndex = 16
     
     public init(rounds: Rounds = .eight) {
@@ -30,8 +30,6 @@ public struct ChaCha: RandomNumberGenerator {
     }
     
     public mutating func next() -> UInt32 {
-        assert((0...16).contains(wordIndex))
-        
         if wordIndex == 16 {
             workingState = state
             
@@ -45,17 +43,14 @@ public struct ChaCha: RandomNumberGenerator {
             wordIndex = 0
         }
         
-        defer {
-            wordIndex += 1
-        }
-        
+        defer { wordIndex &+= 1 }
         return workingState[wordIndex]
     }
     
     public mutating func next() -> UInt64 {
-        let lo = UInt64(truncatingIfNeeded: self.next() as UInt32)
-        let hi = UInt64(truncatingIfNeeded: self.next() as UInt32)
-        return (hi << 32) | lo
+        let lo: UInt32 = self.next()
+        let hi: UInt32 = self.next()
+        return (UInt64(hi) << 32) | UInt64(lo)
     }
     
     #if swift(>=5.4) && !((os(macOS) || targetEnvironment(macCatalyst)) && arch(x86_64))
@@ -73,59 +68,34 @@ public struct ChaCha: RandomNumberGenerator {
     }
 }
 
-fileprivate typealias State = SIMD16<UInt32>
-
-fileprivate extension State {
-    @inline(__always)
-    private var a: SIMD4<UInt32> {
-        get { lowHalf.lowHalf }
-        set { lowHalf.lowHalf = newValue }
-    }
+fileprivate struct State {
+    var a: SIMD4<UInt32>
+    var b: SIMD4<UInt32>
+    var c: SIMD4<UInt32>
+    var d: SIMD4<UInt32>
     
-    @inline(__always)
-    private var b: SIMD4<UInt32> {
-        get { lowHalf.highHalf }
-        set { lowHalf.highHalf = newValue }
-    }
-    
-    @inline(__always)
-    private var c: SIMD4<UInt32> {
-        get { highHalf.lowHalf }
-        set { highHalf.lowHalf = newValue }
-    }
-    
-    @inline(__always)
-    private var d: SIMD4<UInt32> {
-        get { highHalf.highHalf }
-        set { highHalf.highHalf = newValue }
+    init() {
+        a = .zero
+        b = .zero
+        c = .zero
+        d = .zero
     }
     
     init(_ seed: SIMD8<UInt32>, _ stream: UInt64) {
-        self = SIMD16(
-            lowHalf: SIMD8(
-                lowHalf: SIMD4(
-                    0x61707865,
-                    0x3320646e,
-                    0x79622d32,
-                    0x6b206574),
-                highHalf: seed.lowHalf),
-            highHalf: SIMD8(
-                lowHalf: seed.highHalf,
-                highHalf: SIMD4(
-                    0,
-                    0,
-                    UInt32(truncatingIfNeeded: stream),
-                    UInt32(truncatingIfNeeded: stream >> 32))
-            )
-        )
+        a = SIMD4(0x61707865, 0x3320646e, 0x79622d32, 0x6b206574)
+        b = seed.lowHalf
+        c = seed.highHalf
+        let lo = UInt32(truncatingIfNeeded: stream)
+        let hi = UInt32(truncatingIfNeeded: stream >> 32)
+        d = SIMD4(0, 0, lo, hi)
     }
     
     @inline(__always)
     mutating func incrementCounter() {
-        self[12] &+= 1
-        if self[12] == 0 {
-            self[13] &+= 1
-            precondition(self[13] != 0)
+        d.x &+= 1
+        if d.x == 0 {
+            d.y &+= 1
+            assert(d.y != 0)
         }
     }
     
@@ -169,10 +139,27 @@ fileprivate extension State {
         c = c[SIMD4(2, 3, 0, 1)]
         d = d[SIMD4(1, 2, 3, 0)]
     }
+    
+    @inline(__always)
+    static func &+= (lhs: inout Self, rhs: Self) {
+        lhs.a &+= rhs.a
+        lhs.b &+= rhs.b
+        lhs.c &+= rhs.c
+        lhs.d &+= rhs.d
+    }
+    
+    @inline(__always)
+    subscript(index: Int) -> UInt32 {
+        assert((0..<16).contains(index))
+        return withUnsafePointer(to: self) {
+            $0.withMemoryRebound(to: UInt32.self, capacity: 16) {
+                $0[index]
+            }
+        }
+    }
 }
 
 fileprivate extension SIMD8 where Scalar == UInt32 {
-    @inline(__always)
     static func random() -> Self {
         var rng = SystemRandomNumberGenerator()
         var result = Self()
