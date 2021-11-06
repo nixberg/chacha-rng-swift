@@ -172,7 +172,8 @@ fileprivate extension SIMD8 where Scalar == UInt32 {
 
 fileprivate extension SIMD4 where Scalar == UInt32 {
     @inline(__always)
-    mutating func rotate(left count: UInt32) {
-        self = (self &<< count) | (self &>> (32 - count))
+    mutating func rotate(left count: Self.Scalar) {
+        let countComplement = Self.Scalar(Self.Scalar.bitWidth) - count
+        self = (self &<< count) | (self &>> (countComplement))
     }
 }

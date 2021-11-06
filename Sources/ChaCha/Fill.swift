@@ -1,56 +1,69 @@
-public extension ChaCha {
-    mutating func fill(_ slice: inout ArraySlice<UInt8>) {
-        for i in stride(from: slice.startIndex, through: slice.endIndex, by: 4).dropLast() {
-            let word: UInt32 = self.next()
-            slice[i + 0] = UInt8(truncatingIfNeeded: word)
-            slice[i + 1] = UInt8(truncatingIfNeeded: word >> 8)
-            slice[i + 2] = UInt8(truncatingIfNeeded: word >> 16)
-            slice[i + 3] = UInt8(truncatingIfNeeded: word >> 24)
-        }
+import Collections
+import EndianBytes
+
+public protocol FillingRandomNumberGenerator {
+    mutating func fill(_ buffer: UnsafeMutableRawBufferPointer)
+    
+    mutating func fill<Output>(_ output: inout Output)
+    where Output: MutableCollection, Output.Element: FixedWidthInteger & UnsignedInteger
+}
+
+extension ChaCha: FillingRandomNumberGenerator {
+    public mutating func fill(_ buffer: UnsafeMutableRawBufferPointer) {
+        var word: UInt32 = 0
+        var count = 0
         
-        if !slice.count.isMultiple(of: 4) {
-            var word: UInt32 = self.next()
-            for i in slice.indices.suffix(slice.count % 4) {
-                slice[i] = UInt8(truncatingIfNeeded: word)
-                word >>= 8
+        for i in buffer.indices {
+            if count.isMultiple(of: 4) {
+                word = self.next()
             }
+            
+            buffer[i] = UInt8(truncatingIfNeeded: word)
+            
+            word >>= 8
+            count += 1
         }
     }
     
-    mutating func fill(_ slice: inout ArraySlice<UInt16>) {
-        for i in stride(from: slice.startIndex, through: slice.endIndex, by: 2).dropLast() {
-            let word: UInt32 = self.next()
-            slice[i + 0] = UInt16(truncatingIfNeeded: word)
-            slice[i + 1] = UInt16(truncatingIfNeeded: word >> 16)
+    public mutating func fill<Output>(_ output: inout Output)
+    where Output: MutableCollection, Output.Element: FixedWidthInteger & UnsignedInteger {
+        if output.withContiguousMutableStorageIfAvailable({
+            self.fill(UnsafeMutableRawBufferPointer($0))
+        }) != nil {
+            return
         }
         
-        if !slice.count.isMultiple(of: 2) {
-            let word: UInt32 = self.next()
-            slice[slice.index(before: slice.endIndex)] = UInt16(truncatingIfNeeded: word)
+        switch Output.Element.bitWidth {
+        case let bitWidth where bitWidth.isMultiple(of: 8):
+            var buffer: Deque<UInt8> = []
+            
+            for i in output.indices {
+                while buffer.count < (Output.Element.bitWidth / 8) {
+                    let word: UInt32 = self.next()
+                    buffer.append(contentsOf: word.littleEndianBytes())
+                }
+                
+                output[i] = .init(littleEndianBytes: buffer.prefix(Output.Element.bitWidth / 8))!
+                buffer.removeFirst(Output.Element.bitWidth / 8)
+            }
+        default:
+            preconditionFailure("Most general case not implemented; Maybe use BitArray.")
         }
     }
     
-    mutating func fill(_ slice: inout ArraySlice<UInt32>) {
-        for i in slice.indices {
-            slice[i] = self.next()
+    // TODO: Float16
+    
+    public mutating func fill<Output>(_ output: inout Output)
+    where Output: MutableCollection, Output.Element == Float32 {
+        for i in output.indices {
+            output[i] = self.next()
         }
     }
     
-    mutating func fill(_ slice: inout ArraySlice<UInt64>) {
-        for i in slice.indices {
-            slice[i] = self.next()
-        }
-    }
-    
-    mutating func fill(_ slice: inout ArraySlice<Float32>) {
-        for i in slice.indices {
-            slice[i] = self.next()
-        }
-    }
-    
-    mutating func fill(_ slice: inout ArraySlice<Float64>) {
-        for i in slice.indices {
-            slice[i] = self.next()
+    public mutating func fill<Output>(_ output: inout Output)
+    where Output: MutableCollection, Output.Element == Float64 {
+        for i in output.indices {
+            output[i] = self.next()
         }
     }
 }
