@@ -11,17 +11,13 @@ public protocol FillingRandomNumberGenerator {
 extension ChaCha: FillingRandomNumberGenerator {
     public mutating func fill(_ buffer: UnsafeMutableRawBufferPointer) {
         var word: UInt32 = 0
-        var count = 0
-        
         for i in buffer.indices {
-            if count.isMultiple(of: 4) {
+            if i.isMultiple(of: 4) {
                 word = self.next()
             }
-            
-            buffer[i] = UInt8(truncatingIfNeeded: word)
-            
-            word >>= 8
-            count += 1
+            withUnsafeBytes(of: &word) {
+                buffer[i] = $0[i % 4]
+            }
         }
     }
     
