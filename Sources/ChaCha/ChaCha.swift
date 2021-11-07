@@ -30,6 +30,8 @@ public struct ChaCha: RandomNumberGenerator {
     }
     
     public mutating func next() -> UInt32 {
+        assert((0...16).contains(wordIndex))
+        
         if wordIndex == 16 {
             workingState = state
             
@@ -44,7 +46,7 @@ public struct ChaCha: RandomNumberGenerator {
         }
         
         defer { wordIndex &+= 1 }
-        return workingState[wordIndex]
+        return workingState[wordIndex] // TODO: .littleEndian?
     }
     
     public mutating func next() -> UInt64 {
