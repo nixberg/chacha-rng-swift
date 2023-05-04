@@ -1,11 +1,11 @@
 ![Swift](https://github.com/nixberg/chacha-rng-swift/workflows/Swift/badge.svg)
 
-# ChaCha
+# chacha-rng-swift
 
-[ChaCha](https://cr.yp.to/chacha/chacha-20080128.pdf)-based
-[`RandomNumberGenerator`](https://developer.apple.com/documentation/swift/randomnumbergenerator) for Swift. 
-[Compatible](https://github.com/nixberg/chacha-rng-compability-rs) with Rust’s
-[rand_chacha](https://crates.io/crates/rand_chacha).
+[ChaCha](https://cr.yp.to/chacha.html)-based [`RandomNumberGenerator`](
+https://developer.apple.com/documentation/swift/randomnumbergenerator) for Swift. 
+[Compatible](https://github.com/nixberg/chacha-rng-compability-rs) with Rust’s [rand_chacha](
+https://crates.io/crates/rand_chacha).
 
 # Usage
 
@@ -13,53 +13,82 @@
 
 You should almost certainly use `SystemRandomNumberGenerator` instead.
 
-```Swift
-import ChaCha
+```swift
+import ChaChaRNG
 
-var rng = ChaCha() // ChaCha8, random seed, stream: 0.
+var rng = ChaCha8RNG() // Seeded via SystemRandomNumberGenerator, stream: 0.
 
 SIMD2.random(in: 0..<1234, using: &rng)
 ```
 
 ### CSPRNG
 
-```Swift
-var rng = ChaCha(seed: .zero) // Seeded ChaCha8, stream: 0.
+```swift
+var rng = ChaCha8RNG(seed: .zero) // All-zero seed, stream: 0.
 
 Int.random(in: 0..<1234, using: &rng) // 1032
 ```
 
-### Fill ArraySlice
+### Individual unsigned integers
 
-```Swift
-var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+```swift
+var rng = ChaCha20RNG(seed: .zero)
 
-var array = [UInt8](repeating: 0, count: 4)
-rng.fill(&array[...]) // [118, 184, 224, 173]
+rng.next() as UInt8  // 118
+rng.next() as UInt16 // 61856
+rng.next() as UInt32 // 3848953152
+rng.next() as UInt64 // 13265865887270667859
 ```
 
-### Generate Array
+Equivalent Rust:
 
-```Swift
-var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+```rust
+let mut rng = ChaChaRng::from_seed([0u8; 32]);
 
-let array: [UInt8] = rng.generateArray(count: 4) // [118, 184, 224, 173]
+println!("{}", rng.gen::<u8>());  // 118
+println!("{}", rng.gen::<u16>()); // 61856
+println!("{}", rng.gen::<u32>()); // 3848953152
+println!("{}", rng.gen::<u64>()); // 13265865887270667859
 ```
 
-### Append to RangeReplaceableCollection
+### Individual floating-point numbers
 
-```Swift
-var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+```swift
+var rng = ChaCha20RNG(seed: .zero)
 
-var array: [UInt8] = [0]
-rng.append(to: &array, count: 4) // [0, 118, 184, 224, 173]
+rng.next() as Float16 // Only supported on some hardware.
+rng.next() as Float32 // 0.56344515
+rng.next() as Float64 // 0.15914191768880792
 ```
 
-### Floating-point numbers
+Equivalent Rust:
 
-```Swift
-var rng = ChaCha(rounds: .twenty, seed: .zero, stream: 0)
+```rust
+let mut rng = ChaChaRng::from_seed([0u8; 32]);
 
-var f32: Float32 = rng.next() // 0.679210186
-var f64: Float64 = rng.next() // 0.89615423990493759
+println!("{}", rng.gen::<f32>()); // 0.6792102
+println!("{}", rng.gen::<f32>()); // 0.56344515
+println!("{}", rng.gen::<f64>()); // 0.15914191768880792
+```
+
+### Fill buffers:
+
+```swift
+var rng = ChaCha20RNG(seed: .zero)
+        
+var array = [UInt8](repeating: 0, count: 5)
+array.withUnsafeMutableBytes {
+    rng.fill($0)
+}
+array // [118, 184, 224, 173, 160]
+```
+
+Equivalent Rust:
+
+```rust
+let mut rng = ChaChaRng::from_seed([0u8; 32]);
+
+let mut array = [0u8; 5];
+rng.fill(&mut a[..]);
+println!("{:?}", array); // [118, 184, 224, 173, 160]
 ```
