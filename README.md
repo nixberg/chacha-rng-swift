@@ -4,7 +4,7 @@ https://github.com/nixberg/chacha-rng-swift/actions/workflows/swift.yaml)
 # chacha-rng-swift
 
 [ChaCha](https://cr.yp.to/chacha.html)-based [`RandomNumberGenerator`](
-https://developer.apple.com/documentation/swift/randomnumbergenerator) for Swift. 
+https://developer.apple.com/documentation/swift/randomnumbergenerator). 
 [Compatible](https://github.com/nixberg/chacha-rng-compability-rs) with Rust’s [rand_chacha](
 https://crates.io/crates/rand_chacha).
 
