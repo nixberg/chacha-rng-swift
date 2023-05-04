@@ -1,4 +1,5 @@
-![Swift](https://github.com/nixberg/chacha-rng-swift/workflows/Swift/badge.svg)
+[![Swift](https://github.com/nixberg/chacha-rng-swift/actions/workflows/swift.yaml/badge.svg)](
+https://github.com/nixberg/chacha-rng-swift/actions/workflows/swift.yaml)
 
 # chacha-rng-swift
 
