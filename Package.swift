@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
-        .package(url: "https://github.com/nixberg/chacha-swift", branch: "main"),
+        .package(url: "https://github.com/nixberg/chacha-swift", "0.1.0"..<"0.2.0"),
     ],
     targets: [
         .target(
