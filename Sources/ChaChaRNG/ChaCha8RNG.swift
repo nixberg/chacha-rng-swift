@@ -26,6 +26,7 @@ public struct ChaCha8RNG: RandomNumberGenerator {
     }
     
 #if !((os(macOS) || targetEnvironment(macCatalyst)) && arch(x86_64))
+    @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public mutating func next() -> Float16 {
         rng.next()
     }

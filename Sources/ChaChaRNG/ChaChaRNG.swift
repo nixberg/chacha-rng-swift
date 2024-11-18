@@ -52,6 +52,7 @@ struct ChaChaRNG: RandomNumberGenerator {
     }
     
 #if !((os(macOS) || targetEnvironment(macCatalyst)) && arch(x86_64))
+    @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     mutating func next() -> Float16 {
         Float16(self.next() as UInt16 >> 05) * 0x1p-11
     }

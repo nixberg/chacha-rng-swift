@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nixberg/chacha-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "4ac0ef0c943c850dff569954c7a6cb72bc0517e2"
+        "revision" : "4ac0ef0c943c850dff569954c7a6cb72bc0517e2",
+        "version" : "0.1.0"
       }
     },
     {
